@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import { mongoURI } from './config/keys.js';
+import useAllRoutes from './api/routes/routes.js';
 
 const app = express();
 
@@ -13,3 +14,5 @@ const port = process.env.PORT || 5000;
 
 app.get('/', (req, res) => res.send('Hello There'));
 app.listen(port, () => console.log(`Server is running on port ${port}`));
+
+useAllRoutes(app);
