@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node app.js",
     "server": "nodemon app.js",
-    "server:debug": "nodemon --inspect app.js"
+    "server:debug": "nodemon --inspect app.js",
+    "test": "jest --runInBand ./tests"
   },
   "author": "Rikey Chen",
   "license": "ISC",
@@ -22,6 +23,18 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.9",
+    "@babel/preset-env": "^7.16.11",
+    "jest": "^28.0.0",
+    "mongodb-memory-server": "^8.5.1",
     "nodemon": "^2.0.15"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
+  },
+  "babel": {
+    "presets": ["@babel/preset-env"]
   }
 }
