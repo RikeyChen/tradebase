@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "description": "Backend project of TradeBase",
   "main": "app.js",
-  "type": "module",
   "scripts": {
-    "start": "node app.js",
-    "server": "nodemon app.js",
-    "server:debug": "nodemon --inspect app.js",
+    "start": "babel-node app.js",
+    "server": "nodemon --exec babel-node app.js",
+    "server:debug": "nodemon --inspect --exec babel-node app.js",
     "test": "jest --runInBand ./tests"
   },
   "author": "Rikey Chen",
@@ -24,6 +23,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
+    "@babel/node": "^7.16.8",
     "@babel/preset-env": "^7.16.11",
     "jest": "^28.0.0",
     "mongodb-memory-server": "^8.5.1",
@@ -33,8 +33,5 @@
     "transform": {
       "^.+\\.[t|j]sx?$": "babel-jest"
     }
-  },
-  "babel": {
-    "presets": ["@babel/preset-env"]
   }
 }

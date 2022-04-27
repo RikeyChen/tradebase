@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import { mongoURI } from './config/keys.js';
-import useAllRoutes from './api/routes/routes.js';
+import { mongoURI } from './config/keys';
+import useAllRoutes from './api/routes/routes';
 
 const app = express();
 

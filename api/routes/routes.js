@@ -1,4 +1,4 @@
-import usersRoutes from './users.js';
+import usersRoutes from './users';
 
 const routes = {
   '/api/users': usersRoutes,
