@@ -22,6 +22,11 @@ const UserSchema = new Schema(
   }
 );
 
+UserSchema.methods.getPublicFields = function() {
+  const { password, ...user } = this._doc;
+  return user;
+}
+
 const User = mongoose.model('User', UserSchema);
 
 export default User;
