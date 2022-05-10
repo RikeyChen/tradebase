@@ -48,7 +48,6 @@ describe('UserService', () => {
       const user = {
         username: userAttrs.username,
         email: userAttrs.email,
-        password: 'random*salted*hash'
       };
 
       mockingoose(UserModel).toReturn(user, 'save');
@@ -57,7 +56,8 @@ describe('UserService', () => {
 
       expect(savedUser.username).toEqual(userAttrs.username);
       expect(savedUser.email).toEqual(userAttrs.email);
-      expect(savedUser.password).toEqual('random*salted*hash');
+      expect(savedUser).toHaveProperty('token');
+      expect(savedUser).toHaveProperty('success');
 
       getUserMock.mockRestore();
       getEncryptedPasswordMock.mockRestore();
@@ -77,6 +77,41 @@ describe('UserService', () => {
 
       expect(encryptedPassword).toBeDefined();
       expect(encryptedPassword).not.toBe(userAttrs.password);
+    });
+  });
+
+  describe('jwtSignUser', () => {
+    const secretOrKey = "supersecretkey";
+    const options = { expiresIn: 3600 };
+
+    it('should return a signed user with success and token properties', () => {
+      const user = {
+        username: userAttrs.username,
+        email: userAttrs.email,
+      };
+
+      const signedUser = UserServiceInstance.jwtSignUser(user, secretOrKey, options);
+
+      expect(signedUser.username).toEqual(userAttrs.username);
+      expect(signedUser.email).toEqual(userAttrs.email);
+      expect(signedUser).toHaveProperty('success');
+      expect(signedUser).toHaveProperty('token');
+    });
+
+    it('should error when a user that does not respresent valid JSON is provided', () => {
+      const user = new UserModel(userAttrs);
+
+      expect(() => UserServiceInstance.jwtSignUser(user, secretOrKey, options)).toThrow();
+    });
+
+    it('should error when a secretOrKey is not provided', () => {
+      const user = {
+        username: userAttrs.username,
+        email: userAttrs.email,
+      };
+
+      expect(() => UserServiceInstance.jwtSignUser(user, undefined, options)).toThrow();
+      expect(() => UserServiceInstance.jwtSignUser(user, '', options)).toThrow();
     });
   });
 });

@@ -21,7 +21,9 @@ describe('registerUser', () => {
     expect(res.json).toBeCalledWith(
       expect.objectContaining({
         username: userAttrs.username,
-        email: userAttrs.email
+        email: userAttrs.email,
+        token: expect.anything(),
+        success: true
       })
     );
   });

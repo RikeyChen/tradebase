@@ -1,4 +1,6 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import config from '../../config';
 
 export default class UserService {
   constructor(userModel) {
@@ -20,7 +22,12 @@ export default class UserService {
     const newUser = new this.userModel(userAttrs);
     const encryptedPassword = await this.getEncryptedPassword(userAttrs.password);
     newUser.password = encryptedPassword;
-    const savedUser = await newUser.save();
+    let savedUser = await newUser.save();
+
+    // Remove password from the returned data - this returns an object not a document
+    savedUser = savedUser.getPublicFields();
+
+    savedUser = this.jwtSignUser(savedUser, config.secretOrKey, { expiresIn: 3600 });
 
     return savedUser;
   }
@@ -30,5 +37,15 @@ export default class UserService {
     const hash = await bcrypt.hash(password, salt);
 
     return hash;
+  }
+
+  // user needs to be an object instead of a document or jwt#sign will error
+  jwtSignUser(user, secretOrKey, options) {
+    const jsonWebToken = jwt.sign(user, secretOrKey, options);
+
+    user.success = true;
+    user.token = "Bearer " + jsonWebToken;
+
+    return user;
   }
 }

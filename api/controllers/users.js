@@ -7,8 +7,8 @@ export const registerUser = async (req, res) => {
 
   try {
     const user = await UserServiceInstance.createUser(userData);
-    const redactedUser = user.getPublicFields();
-    return res.json(redactedUser);
+
+    return res.json(user);
   } catch(err) {
     res.status(400).json(err);
   }
