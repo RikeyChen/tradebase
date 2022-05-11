@@ -13,7 +13,7 @@ export default class UserService {
   }
 
   async createUser(userAttrs) {
-    const user = await this.getUser({ email: userAttrs.email });
+    const user = await this.getUser({ username: userAttrs.username });
 
     if (user) {
      throw new Error("A user has already registered with this email address");
@@ -27,9 +27,24 @@ export default class UserService {
     // Remove password from the returned data - this returns an object not a document
     savedUser = savedUser.getPublicFields();
 
-    savedUser = this.jwtSignUser(savedUser, config.secretOrKey, { expiresIn: 3600 });
+    savedUser = this.jwtSignUser(savedUser, config.secretOrKey, { expiresIn: 18000 });
 
     return savedUser;
+  }
+
+  async loginUser(userAttrs) {
+    const { username, password } = userAttrs;
+    const invalidCredentialsError = new Error("The entered username and password were invalid.");
+
+    let user = await this.getUser({ username });
+    if (!user) throw invalidCredentialsError;
+
+    const isPasswordMatch = await this.checkPasswordMatch(password, user.password);
+    if(!isPasswordMatch) throw invalidCredentialsError;
+
+    user = user.getPublicFields();
+
+    return this.jwtSignUser(user, config.secretOrKey, { expiresIn: 18000 });
   }
 
   async getEncryptedPassword(password) {
@@ -37,6 +52,10 @@ export default class UserService {
     const hash = await bcrypt.hash(password, salt);
 
     return hash;
+  }
+
+  async checkPasswordMatch(password, encryptedPassword) {
+    return await bcrypt.compare(password, encryptedPassword);
   }
 
   // user needs to be an object instead of a document or jwt#sign will error

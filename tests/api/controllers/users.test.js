@@ -35,3 +35,39 @@ describe('registerUser', () => {
     expect(res.status).toBeCalledWith(400);
   })
 });
+
+describe('loginUser', () => {
+  const userAttrs = {
+    username: 'user1',
+    email: 'user1@email.com',
+    password: 'user1password'
+  };
+
+  it('successfully returns a validated user as JSON', async () => {
+    const req = mockRequest({ body: userAttrs });
+    const res = mockResponse();
+
+    await usersController.registerUser(req, res);
+    await usersController.loginUser(req, res);
+
+    expect(res.json).toBeCalledWith(
+      expect.objectContaining({
+        username: userAttrs.username,
+        email: userAttrs.email,
+        token: expect.anything(),
+        success: true
+      })
+    );
+  });
+
+  it('respond with a 400 error message when the credentials are invalid', async () => {
+    const req = mockRequest({ body: { username: 'notexistinguser', password: 'pass' } });
+    const res = mockResponse();
+    const invalidCredentialsError = "The entered username and password were invalid."
+
+    await usersController.loginUser(req, res);
+
+    expect(res.status).toBeCalledWith(400);
+    expect(res.json).toBeCalledWith(invalidCredentialsError);
+  });
+});
