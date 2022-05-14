@@ -10,7 +10,8 @@ describe('UserService', () => {
   const userAttrs = {
     username: 'user1',
     email: 'user1@email.com',
-    password: 'user1password'
+    password: 'user1password',
+    confirmPassword: 'user1password'
   }
 
   const UserServiceInstance = new UserService(UserModel);
@@ -67,7 +68,18 @@ describe('UserService', () => {
       const getUserMock = jest.spyOn(UserServiceInstance, 'getUser')
                     .mockImplementation(() => new UserModel(userAttrs));
 
-      await expect(UserServiceInstance.createUser(userAttrs)).rejects.toThrow();
+      const expectedErrorObj = {
+        username: "A user has already registered with this username"
+      };
+      let thrownError;
+
+      try {
+        await UserServiceInstance.createUser(userAttrs);
+      } catch(err) {
+        thrownError = err;
+      }
+
+      expect(thrownError).toEqual(expectedErrorObj);
 
       getUserMock.mockRestore();
     });
@@ -118,7 +130,9 @@ describe('UserService', () => {
   });
 
   describe('loginUser', () => {
-    const invalidCredentialsMessage = "The entered username and password were invalid."
+    const expectedErrorObj = {
+      message: "The entered username and password were invalid."
+    };
 
     it('successfully returns a user when valid credentials are inputted', async () => {
       const user = new UserModel(userAttrs);
@@ -142,7 +156,15 @@ describe('UserService', () => {
       const getUserMock = jest.spyOn(UserServiceInstance, 'getUser')
                             .mockImplementation(() => undefined);
 
-      await expect(UserServiceInstance.loginUser({ username: 'fakeusername', password: userAttrs.password })).rejects.toThrow(invalidCredentialsMessage);
+      let thrownError;
+
+      try {
+        await UserServiceInstance.loginUser({ username: 'fakeusername', password: userAttrs.password });
+      } catch(err) {
+        thrownError = err;
+      }
+
+      expect(thrownError).toEqual(expectedErrorObj);
 
       getUserMock.mockRestore();
     });
@@ -152,7 +174,15 @@ describe('UserService', () => {
       const getUserMock = jest.spyOn(UserServiceInstance, 'getUser')
                             .mockImplementation(() => user);
 
-      await expect(UserServiceInstance.loginUser({username: 'user1', password: 'wrongpassword'})).rejects.toThrow(invalidCredentialsMessage);
+      let thrownError;
+
+      try {
+        await UserServiceInstance.loginUser({username: 'user1', password: 'wrongpassword'});
+      } catch(err) {
+        thrownError = err;
+      }
+
+      expect(thrownError).toEqual(expectedErrorObj);
 
       getUserMock.mockRestore();
     });

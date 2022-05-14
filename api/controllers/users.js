@@ -10,7 +10,7 @@ export const registerUser = async (req, res) => {
 
     return res.json(user);
   } catch(err) {
-    res.status(400).json(err.message);
+    res.status(400).json(err);
   }
 };
 
@@ -23,6 +23,6 @@ export const loginUser = async (req, res) => {
 
     return res.json(user);
   } catch(err) {
-    res.status(400).json(err.message);
+    res.status(400).json(err);
   }
 };
