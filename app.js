@@ -1,18 +1,7 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import { mongoURI } from './config/keys.js';
-import useAllRoutes from './api/routes/routes.js';
+import loaders from './loaders';
 
-const app = express();
+const startServer = async () => {
+  await loaders();
+}
 
-mongoose
-  .connect(mongoURI, { useNewUrlParser: true })
-  .then(() => console.log('Connected to MongoDB successfully'))
-  .catch(err => console.log(err));
-
-const port = process.env.PORT || 5000;
-
-app.get('/', (req, res) => res.send('Hello There'));
-app.listen(port, () => console.log(`Server is running on port ${port}`));
-
-useAllRoutes(app);
+startServer();
